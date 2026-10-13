@@ -48,7 +48,7 @@ def cargar_procesos(): # para cargar procesos, no se si esta bien pero creo que 
             'tiempo_llegada': tiempo_llegada,
             'rafagas': rafagas,
             #creo que deberiamos tambien hacer otra lista de rafagas pero que se consuma con el tiempo
-            
+
             'estado': 'Nuevo', #estado inicial del proceso (la idea es que se vaya atualizando)
             'tiempo_restante_bloqueo': 0, #tiempo restante de bloqueo para cuando salga a e/s, se inicializa en 0 pq no esta bloq al principio
          }
@@ -87,6 +87,8 @@ def simular_ejecucion(procesos): #aca habia pensado en hacer un menu para elegir
 #def fifo(procesos): #fifito first in first out
 
 #def srtf(procesos): #mas cortito primero CON DESALOJO
+
+#def imprimir_diagrama(procesos): #para imprimir al final de cada simulacion algo similar al excel
 
 def main():
     #lista para guardar procesos en el main

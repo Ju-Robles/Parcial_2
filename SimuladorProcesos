@@ -1,3 +1,10 @@
+def leer_entero(mensaje): #funcion para leer un numero entero asi no rompe todo el programa si el usuario mete cualq cosa
+    while True:
+        try:
+            return int(input(mensaje))
+        except ValueError:
+            print("Por favor, ingrese un número entero.")
+
 def menu(): #menu de opciones, creo q el nombre puede ser mejor pq esta feo, pero bueno
     print("|-----------------------------------|")
     print("|      DIAGRAMA TIEMPO/PROCESO      |")
@@ -7,40 +14,40 @@ def menu(): #menu de opciones, creo q el nombre puede ser mejor pq esta feo, per
     print("| 3. Simular ejecución              |")
     print("| 4. Salir                          |")
     print("|-----------------------------------|")
-    return int(input("Seleccione una opción: ")) #puse para q devuelva la opcion en la misma funcion
+    return (leer_entero("Seleccione una opción: ")) #puse para q devuelva la opcion en la misma funcion
 
 def cargar_procesos(): # para cargar procesos, no se si esta bien pero creo que va queriendo
     #aca se guardarian los procesos en una lista
     procesos = []
     #cantidad de procesos, se valida qe esten entre 1 y 4
-    cantidad = int(input("Ingrese la cantidad de procesos a cargar (1 a 4): "))
+    cantidad = leer_entero("Ingrese la cantidad de procesos a cargar (1 a 4): ")
 
     while cantidad < 1 or cantidad > 4:
         print("Por favor, ingrese un número entre 1 y 4.")
-        cantidad = int(input("Ingrese la cantidad de procesos a cargar (1 a 4): "))
+        cantidad = leer_entero("Ingrese la cantidad de procesos a cargar (1 a 4): ")
     #cargando los procesitos uno por uno
     for i in range(cantidad):
         print("Proceso P", i + 1,": ")
         #se pregunta en que unidad de tiempo llega el proceso, se valida que no sea negativo
-        tiempo_llegada = int(input("Ingrese el tiempo de llegada: "))
+        tiempo_llegada = leer_entero("Ingrese el tiempo de llegada: ")
 
         while tiempo_llegada < 0:
             print("El tiempo de llegada no puede ser negativo.")
-            tiempo_llegada = int(input("Ingrese el tiempo de llegada: "))
+            tiempo_llegada = leer_entero("Ingrese el tiempo de llegada: ")
         #se pregunta cuantas rafagas de cpu tiene el proceso, se valida que sea entre 1 y 4
-        cantidad_rafagas = int(input("Ingrese la cantidad de ráfagas (1 a 4): "))
+        cantidad_rafagas = leer_entero("Ingrese la cantidad de ráfagas (1 a 4): ")
 
         while cantidad_rafagas < 1 or cantidad_rafagas > 4:
             print("Debe ingresar al menos 1 ráfaga y no más de 4.")
-            cantidad_rafagas = int(input("Ingrese la cantidad de ráfagas (1 a 4): "))
+            cantidad_rafagas = leer_entero("Ingrese la cantidad de ráfagas (1 a 4): ")
         #lista que guarda las rafagas del proceso
         rafagas = []
         for j in range(cantidad_rafagas):
-            tiempo_cpu = int(input(f"Ingrese la duración de la ráfaga {j + 1}: "))
+            tiempo_cpu = leer_entero(f"Ingrese la duración de la ráfaga {j + 1}: ")
 
             while tiempo_cpu < 0:
                 print("La duración de la ráfaga no puede ser negativa.")
-                tiempo_cpu = int(input(f"Ingrese la duración de la ráfaga {j + 1}: "))
+                tiempo_cpu = leer_entero(f"Ingrese la duración de la ráfaga {j + 1}: ")
             rafagas.append(tiempo_cpu)
         #diccionario de procesos pq python no tiene struct
         proceso = {
@@ -48,7 +55,7 @@ def cargar_procesos(): # para cargar procesos, no se si esta bien pero creo que 
             'tiempo_llegada': tiempo_llegada,
             'rafagas': rafagas,
             #creo que deberiamos tambien hacer otra lista de rafagas pero que se consuma con el tiempo
-
+            
             'estado': 'Nuevo', #estado inicial del proceso (la idea es que se vaya atualizando)
             'tiempo_restante_bloqueo': 0, #tiempo restante de bloqueo para cuando salga a e/s, se inicializa en 0 pq no esta bloq al principio
          }
@@ -72,7 +79,7 @@ def simular_ejecucion(procesos): #aca habia pensado en hacer un menu para elegir
     print(" 2. SRTF (Mas corto primero con desalojo) ")
     print(" 3. Volver al menu principal              ")
     print("------------------------------------------")
-    opcion_algoritmo = int(input("Seleccione un algoritmo de planificación: ")) #guardamos la opcion del menu en la variable opcion_algoritmo
+    opcion_algoritmo = leer_entero("Seleccione un algoritmo de planificación: ") #guardamos la opcion del menu en la variable opcion_algoritmo
 
     if opcion_algoritmo == 1: #si es 1, se ejecuta FIFO
         fifo(procesos)

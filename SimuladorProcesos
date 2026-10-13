@@ -42,25 +42,26 @@ def cargar_procesos(): # para cargar procesos, no se si esta bien pero creo que 
                 print("La duración de la ráfaga no puede ser negativa.")
                 tiempo_cpu = int(input(f"Ingrese la duración de la ráfaga {j + 1}: "))
 
-                rafagas.append("CPU: ", (tiempo_cpu))
+            rafagas.append(tiempo_cpu)
 #diccionario de procesos pq python no tiene struct
-            proceso = {
-                'nombre': f"P{i + 1}",
-                'tiempo_llegada': tiempo_llegada,
-                'rafagas': rafagas
+        proceso = {
+            'nombre': f"P{i + 1}",
+            'tiempo_llegada': tiempo_llegada,
+            'rafagas': rafagas
             }
 #esto agrega el proceso a la lista de procesos 
-            procesos.append(proceso)
+        procesos.append(proceso)
 #devuelve la lista completa de procesos cargados
         return procesos
 
-def mostrar_procesos(procesos): #para mostrar los procesos cargados, validar que existan en prmer lugar
+#def mostrar_procesos(procesos): #para mostrar los procesos cargados, validar que existan en prmer lugar
 
-def simular_ejecucion(procesos): #aca habia pensado en hacer un menu para elegir el algoritmo de planificacion
+#def simular_ejecucion(procesos): #aca habia pensado en hacer un menu para elegir el algoritmo de planificacion
 
-def fifo(procesos): #fifito first in first out
 
-def srtf(procesos): #mas cortito primero CON DESALOJO
+#def fifo(procesos): #fifito first in first out
+
+#def srtf(procesos): #mas cortito primero CON DESALOJO
 
 def main():
     #lista para guardar procesos en el main
@@ -73,12 +74,15 @@ def main():
             #cargando los procesos y guardandolos en la lista de procesos con la funcion cargar_procesos
             procesos = cargar_procesos()
             print("Los procesos han sido cargados exitosamente.")
-        elif opcion == 2:
+       # elif opcion == 2:
         
-        elif opcion == 3:
+        #elif opcion == 3:
 
         elif opcion == 4:
             print("Gracias por usar el programa!")
             break
         else:
             print("Opción inválida. Por favor, seleccione una opción del menu.")
+
+if __name__ == "__main__":
+     main()

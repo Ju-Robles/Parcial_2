@@ -41,14 +41,17 @@ def cargar_procesos(): # para cargar procesos, no se si esta bien pero creo que 
             while tiempo_cpu < 0:
                 print("La duración de la ráfaga no puede ser negativa.")
                 tiempo_cpu = int(input(f"Ingrese la duración de la ráfaga {j + 1}: "))
-
             rafagas.append(tiempo_cpu)
         #diccionario de procesos pq python no tiene struct
         proceso = {
             'nombre': f"P{i + 1}",
             'tiempo_llegada': tiempo_llegada,
-            'rafagas': rafagas
-            }
+            'rafagas': rafagas,
+            #creo que deberiamos tambien hacer otra lista de rafagas pero que se consuma con el tiempo
+            
+            'estado': 'Nuevo', #estado inicial del proceso (la idea es que se vaya atualizando)
+            'tiempo_restante_bloqueo': 0, #tiempo restante de bloqueo para cuando salga a e/s, se inicializa en 0 pq no esta bloq al principio
+         }
         #esto agrega el proceso a la lista de procesos 
         procesos.append(proceso)
         #devuelve la lista completa de procesos cargados

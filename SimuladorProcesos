@@ -96,10 +96,10 @@ def main():
             #cargando los procesos y guardandolos en la lista de procesos con la funcion cargar_procesos
             procesos = cargar_procesos()
             print("Los procesos han sido cargados exitosamente.")
-        elif opcion == 2:
+       # elif opcion == 2:
+        #    mostrar_procesos(procesos)
+        elif opcion == 3:
             simular_ejecucion(procesos)
-        #elif opcion == 3:
-
         elif opcion == 4:
             print("Gracias por usar el programa!")
             break

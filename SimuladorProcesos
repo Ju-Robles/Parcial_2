@@ -54,6 +54,13 @@ def cargar_procesos(): # para cargar procesos, no se si esta bien pero creo que 
 #devuelve la lista completa de procesos cargados
         return procesos
 
+def mostrar_procesos(procesos): #para mostrar los procesos cargados, validar que existan en prmer lugar
+
+def simular_ejecucion(procesos): #aca habia pensado en hacer un menu para elegir el algoritmo de planificacion
+
+def fifo(procesos): #fifito first in first out
+
+def srtf(procesos): #mas cortito primero CON DESALOJO
 
 def main():
     #lista para guardar procesos en el main

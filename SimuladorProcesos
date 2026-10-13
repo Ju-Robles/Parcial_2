@@ -1,0 +1,33 @@
+def menu():
+    print("|-----------------------------------|")
+    print("|      DIAGRAMA TIEMPO/PROCESO      |")
+    print("|-----------------------------------|")
+    print("| 1. Cargar procesos                |")
+    print("| 2. Mostrar procesos               |")
+    print("| 3. Simular ejecución              |")
+    print("| 4. Salir                          |")
+    print("|-----------------------------------|")
+    return int(input("Seleccione una opción: ")) 
+
+
+
+
+
+def main():
+    procesos = []
+
+    while True:
+        opcion = menu()
+
+        if opcion == 1:
+
+        elif opcion == 2:
+        
+        elif opcion == 3:
+
+        elif opcion == 4:
+            print("Gracias por usar el programa!")
+            break
+        else:
+            print("Opción inválida. Por favor, seleccione una opción del menu.")
+            

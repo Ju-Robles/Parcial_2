@@ -1,4 +1,4 @@
-def menu(): #menu de opciones, creo q el nombre puede ser mejor, pero bueno
+def menu(): #menu de opciones, creo q el nombre puede ser mejor pq esta feo, pero bueno
     print("|-----------------------------------|")
     print("|      DIAGRAMA TIEMPO/PROCESO      |")
     print("|-----------------------------------|")
@@ -18,7 +18,7 @@ def cargar_procesos(): # para cargar procesos, no se si esta bien pero creo que 
     while cantidad < 1 or cantidad > 4:
         print("Por favor, ingrese un número entre 1 y 4.")
         cantidad = int(input("Ingrese la cantidad de procesos a cargar (1 a 4): "))
-#cargando los procesitos uno por uno
+    #cargando los procesitos uno por uno
     for i in range(cantidad):
         print("Proceso P", i + 1,": ")
         #se pregunta en que unidad de tiempo llega el proceso, se valida que no sea negativo
@@ -27,13 +27,13 @@ def cargar_procesos(): # para cargar procesos, no se si esta bien pero creo que 
         while tiempo_llegada < 0:
             print("El tiempo de llegada no puede ser negativo.")
             tiempo_llegada = int(input("Ingrese el tiempo de llegada: "))
-#se pregunta cuantas rafagas de cpu tiene el proceso, se valida que sea entre 1 y 4
+        #se pregunta cuantas rafagas de cpu tiene el proceso, se valida que sea entre 1 y 4
         cantidad_rafagas = int(input("Ingrese la cantidad de ráfagas (1 a 4): "))
 
         while cantidad_rafagas < 1 or cantidad_rafagas > 4:
             print("Debe ingresar al menos 1 ráfaga y no más de 4.")
             cantidad_rafagas = int(input("Ingrese la cantidad de ráfagas (1 a 4): "))
-#lista que guarda las rafagas del proceso
+        #lista que guarda las rafagas del proceso
         rafagas = []
         for j in range(cantidad_rafagas):
             tiempo_cpu = int(input(f"Ingrese la duración de la ráfaga {j + 1}: "))
@@ -43,20 +43,42 @@ def cargar_procesos(): # para cargar procesos, no se si esta bien pero creo que 
                 tiempo_cpu = int(input(f"Ingrese la duración de la ráfaga {j + 1}: "))
 
             rafagas.append(tiempo_cpu)
-#diccionario de procesos pq python no tiene struct
+        #diccionario de procesos pq python no tiene struct
         proceso = {
             'nombre': f"P{i + 1}",
             'tiempo_llegada': tiempo_llegada,
             'rafagas': rafagas
             }
-#esto agrega el proceso a la lista de procesos 
+        #esto agrega el proceso a la lista de procesos 
         procesos.append(proceso)
-#devuelve la lista completa de procesos cargados
+        #devuelve la lista completa de procesos cargados
         return procesos
 
 #def mostrar_procesos(procesos): #para mostrar los procesos cargados, validar que existan en prmer lugar
 
-#def simular_ejecucion(procesos): #aca habia pensado en hacer un menu para elegir el algoritmo de planificacion
+def simular_ejecucion(procesos): #aca habia pensado en hacer un menu para elegir el algoritmo de planificacion
+    #se valida que existan procesos antes de simular ejecucion
+    if not procesos:
+        print("No hay procesos cargados. Por favor, cargue los procesos primero.")
+        return
+    #menu para elegir el algoritmo de planificacion
+    print("------------------------------------------")
+    print("        ALGORITMO DE PLANIFICACION        ")
+    print("------------------------------------------")
+    print(" 1. FIFO (First In First Out)             ")
+    print(" 2. SRTF (Mas corto primero con desalojo) ")
+    print(" 3. Volver al menu principal              ")
+    print("------------------------------------------")
+    opcion_algoritmo = int(input("Seleccione un algoritmo de planificación: ")) #guardamos la opcion del menu en la variable opcion_algoritmo
+
+    if opcion_algoritmo == 1: #si es 1, se ejecuta FIFO
+        fifo(procesos)
+    elif opcion_algoritmo == 2: #si es 2, se ejecuta SRTF
+        srtf(procesos)
+    elif opcion_algoritmo == 3: #si es 3, se vuelve al menu principal
+        return
+    else:
+        print("Opción inválida. Por favor, seleccione una opcion del menu.") #si no es ninguna, se dice q esta mal
 
 
 #def fifo(procesos): #fifito first in first out
@@ -68,14 +90,14 @@ def main():
     procesos = []
 
     while True:
-        opcion = menu()
+        opcion = menu() #se guarda la opcion del menu en la variable opcion 
 
         if opcion == 1:
             #cargando los procesos y guardandolos en la lista de procesos con la funcion cargar_procesos
             procesos = cargar_procesos()
             print("Los procesos han sido cargados exitosamente.")
-       # elif opcion == 2:
-        
+        elif opcion == 2:
+            simular_ejecucion(procesos)
         #elif opcion == 3:
 
         elif opcion == 4:

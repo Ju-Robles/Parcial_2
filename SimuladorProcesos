@@ -1,4 +1,4 @@
-def menu():
+def menu(): #menu de opciones, creo q el nombre puede ser mejor, pero bueno
     print("|-----------------------------------|")
     print("|      DIAGRAMA TIEMPO/PROCESO      |")
     print("|-----------------------------------|")
@@ -7,20 +7,65 @@ def menu():
     print("| 3. Simular ejecución              |")
     print("| 4. Salir                          |")
     print("|-----------------------------------|")
-    return int(input("Seleccione una opción: ")) 
+    return int(input("Seleccione una opción: ")) #puse para q devuelva la opcion en la misma funcion
 
+def cargar_procesos(): # para cargar procesos, no se si esta bien pero creo que va queriendo
+    #aca se guardarian los procesos en una lista
+    procesos = []
+    #cantidad de procesos, se valida qe esten entre 1 y 4
+    cantidad = int(input("Ingrese la cantidad de procesos a cargar (1 a 4): "))
 
+    while cantidad < 1 or cantidad > 4:
+        print("Por favor, ingrese un número entre 1 y 4.")
+        cantidad = int(input("Ingrese la cantidad de procesos a cargar (1 a 4): "))
+#cargando los procesitos uno por uno
+    for i in range(cantidad):
+        print("Proceso P", i + 1,": ")
+        #se pregunta en que unidad de tiempo llega el proceso, se valida que no sea negativo
+        tiempo_llegada = int(input("Ingrese el tiempo de llegada: "))
 
+        while tiempo_llegada < 0:
+            print("El tiempo de llegada no puede ser negativo.")
+            tiempo_llegada = int(input("Ingrese el tiempo de llegada: "))
+#se pregunta cuantas rafagas de cpu tiene el proceso, se valida que sea entre 1 y 4
+        cantidad_rafagas = int(input("Ingrese la cantidad de ráfagas (1 a 4): "))
+
+        while cantidad_rafagas < 1 or cantidad_rafagas > 4:
+            print("Debe ingresar al menos 1 ráfaga y no más de 4.")
+            cantidad_rafagas = int(input("Ingrese la cantidad de ráfagas (1 a 4): "))
+#lista que guarda las rafagas del proceso
+        rafagas = []
+        for j in range(cantidad_rafagas):
+            tiempo_cpu = int(input(f"Ingrese la duración de la ráfaga {j + 1}: "))
+
+            while tiempo_cpu < 0:
+                print("La duración de la ráfaga no puede ser negativa.")
+                tiempo_cpu = int(input(f"Ingrese la duración de la ráfaga {j + 1}: "))
+
+                rafagas.append("CPU: ", (tiempo_cpu))
+#diccionario de procesos pq python no tiene struct
+            proceso = {
+                'nombre': f"P{i + 1}",
+                'tiempo_llegada': tiempo_llegada,
+                'rafagas': rafagas
+            }
+#esto agrega el proceso a la lista de procesos 
+            procesos.append(proceso)
+#devuelve la lista completa de procesos cargados
+        return procesos
 
 
 def main():
+    #lista para guardar procesos en el main
     procesos = []
 
     while True:
         opcion = menu()
 
         if opcion == 1:
-
+            #cargando los procesos y guardandolos en la lista de procesos con la funcion cargar_procesos
+            procesos = cargar_procesos()
+            print("Los procesos han sido cargados exitosamente.")
         elif opcion == 2:
         
         elif opcion == 3:
@@ -30,4 +75,3 @@ def main():
             break
         else:
             print("Opción inválida. Por favor, seleccione una opción del menu.")
-            

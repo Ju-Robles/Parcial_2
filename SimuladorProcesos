@@ -64,7 +64,21 @@ def cargar_procesos(): # para cargar procesos, no se si esta bien pero creo que 
         #devuelve la lista completa de procesos cargados
         return procesos
 
-#def mostrar_procesos(procesos): #para mostrar los procesos cargados, validar que existan en prmer lugar
+def mostrar_procesos(procesos): #para mostrar los procesos cargados, validar que existan en prmer lugar
+
+    if not procesos:
+        print("No hay procesos cargados. Cargue los procesos primero. \n")
+    else:
+        print("|-----------------------------------|")
+        print("|        PROCESOS CARGADOS          |")
+        print("|-----------------------------------|")
+
+        for proceso in procesos:
+            print(f"Nombre: {proceso['nombre']}")
+            print(f"Tiempo de llegada: {proceso['tiempo_llegada']}")
+            print(f"Ráfagas de CPU: {proceso['rafagas']}")
+            print("|-----------------------------------|")
+    
 
 def simular_ejecucion(procesos): #aca habia pensado en hacer un menu para elegir el algoritmo de planificacion
     #se valida que existan procesos antes de simular ejecucion
@@ -108,8 +122,8 @@ def main():
             #cargando los procesos y guardandolos en la lista de procesos con la funcion cargar_procesos
             procesos = cargar_procesos()
             print("Los procesos han sido cargados exitosamente.")
-       # elif opcion == 2:
-        #    mostrar_procesos(procesos)
+        elif opcion == 2:
+            mostrar_procesos(procesos)
         elif opcion == 3:
             simular_ejecucion(procesos)
         elif opcion == 4:

@@ -52,10 +52,10 @@ def cargar_procesos(): # para cargar procesos, no se si esta bien pero creo que 
         #diccionario de procesos pq python no tiene struct
         proceso = {
             'nombre': f"P{i + 1}",
-            'tiempo_llegada': tiempo_llegada,
-            'rafagas': rafagas,
+            'tiempo_llegada': tiempo_llegada, #en cual unidad de tiempo entra el proceso al queue
+            'rafagas_originales': rafagas, #ingresadas por el usuario
             #creo que deberiamos tambien hacer otra lista de rafagas pero que se consuma con el tiempo
-            
+            'rafagas': list(rafagas), #lista de rafagas que se consume a medida que se ejecuta el proceso
             'estado': 'Nuevo', #estado inicial del proceso (la idea es que se vaya atualizando)
             'tiempo_restante_bloqueo': 0, #tiempo restante de bloqueo para cuando salga a e/s, se inicializa en 0 pq no esta bloq al principio
          }
@@ -68,6 +68,7 @@ def mostrar_procesos(procesos): #para mostrar los procesos cargados, validar que
 
     if not procesos:
         print("No hay procesos cargados. Cargue los procesos primero. \n")
+        return
     else:
         print("|-----------------------------------|")
         print("|        PROCESOS CARGADOS          |")
@@ -105,7 +106,37 @@ def simular_ejecucion(procesos): #aca habia pensado en hacer un menu para elegir
         print("Opción inválida. Por favor, seleccione una opcion del menu.") #si no es ninguna, se dice q esta mal
 
 
-#def fifo(procesos): #fifito first in first out
+def fifo(procesos): #fifito first in first out
+
+    print("--------------------------------")
+    print("     ALGORITMO SELECCIONADO:    ")
+    print("               FIFO             ")
+    print("--------------------------------")
+    
+    tiempo_actual = 0; #inicia en 0 porque es el principio we
+
+    #listas para cada estado de los procesos
+    listos = []
+    bloqueados = []
+
+    #estados del cpu
+    proceso_ejecutandose = None;
+
+    #bucle de iteracion madre
+    while procesos or listos or bloqueados or proceso_ejecutandose > 0
+        print("Tiempo {tiempo_actual} ut")
+
+        #la prioridad es la carga asi que primero se chequea si uno quiere entrar
+        procesos_nuevos = [p for p in procesos if p['tiempo_llegada'] == tiempo_actual]
+        for p in procesos_nuevos:
+            print(f"-> {p['nombre']} ha llegado a la cola.")
+            p['estado'] = 'Listo'
+            listos.append(p)
+            procesos.remove(p)
+
+        
+            
+
 
 #def srtf(procesos): #mas cortito primero CON DESALOJO
 
@@ -123,8 +154,10 @@ def main():
             procesos = cargar_procesos()
             print("Los procesos han sido cargados exitosamente.")
         elif opcion == 2:
+            #muestra los procesos cargados y sus respectivos detalles
             mostrar_procesos(procesos)
         elif opcion == 3:
+            #abre el menu que permite seleccionar el algoritmo de planificacion
             simular_ejecucion(procesos)
         elif opcion == 4:
             print("Gracias por usar el programa!")

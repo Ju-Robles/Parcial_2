@@ -1,0 +1,87 @@
+def fifo(procesos):
+    print("\n>>> INICIANDO SIMULACIÓN FIFO <<<")
+    tiempo_actual = 0
+    # Listas de estados
+    listos = []
+    bloqueados = []
+    
+    # Variables de estado del procesador 
+    proceso_en_ejecucion = None
+    tiempo_so_restante = 0 # El S.O. tarda 10ut (cambios de contexto, etc.)
+    
+    # Bucle principal de tiempo
+    while procesos or listos or bloqueados or proceso_en_ejecucion or tiempo_so_restante > 0:
+        print(f"\n[Tiempo {tiempo_actual} ut]")
+        
+        # 1. Chequear si llegan procesos nuevos al sistema
+        procesos_llegados = [p for p in procesos if p['tiempo_llegada'] == tiempo_actual]
+        for p in procesos_llegados:
+            print(f" -> {p['nombre']} ha llegado al sistema. Intervención del S.O. (10ut)")
+            p['estado'] = 'LISTO'
+            listos.append(p)
+            procesos.remove(p)
+            tiempo_so_restante = 10 # El S.O actua para cargar
+            
+        # 2. Actualizar procesos bloqueados (E/S de 30ut)
+        for p in bloqueados[:]:
+            p['tiempo_bloqueo_restante'] -= 10 # Suponiendo saltos de 10 en 10
+            if p['tiempo_bloqueo_restante'] <= 0:
+                print(f" -> {p['nombre']} terminó su E/S. Pasa a LISTO.")
+                p['estado'] = 'LISTO'
+                bloqueados.remove(p)
+                listos.append(p)
+        
+        # 3. ¿El Sistema Operativo está ocupado?
+        if tiempo_so_restante > 0:
+            print(" -> S.O. Ejecutando rutinas de administración...")
+            tiempo_so_restante -= 10
+            tiempo_actual += 10
+            continue # Si el SO ocupa la CPU, los procesos no pueden ejecutar
+            
+        # 4. ¿Hay proceso ejecutando?
+        if proceso_en_ejecucion:
+            # Ejecuta la ráfaga actual
+            rafaga_actual = proceso_en_ejecucion['rafagas_restantes'][0]
+            print(f" -> Ejecutando {proceso_en_ejecucion['nombre']} (Ráfaga restante: {rafaga_actual}ut)")
+            
+            # Restamos el tiempo ejecutado
+            proceso_en_ejecucion['rafagas_restantes'][0] -= 10
+            
+            # Si terminó su ráfaga actual
+            if proceso_en_ejecucion['rafagas_restantes'][0] <= 0:
+                proceso_en_ejecucion['rafagas_restantes'].pop(0) # Quitamos la ráfaga terminada
+                
+                if not proceso_en_ejecucion['rafagas_restantes']:
+                    print(f" -> {proceso_en_ejecucion['nombre']} ha TERMINADO su ejecución.")
+                else:
+                    print(f" -> {proceso_en_ejecucion['nombre']} se BLOQUEA por E/S (30ut).")
+                    proceso_en_ejecucion['estado'] = 'BLOQUEADO'
+                    proceso_en_ejecucion['tiempo_bloqueo_restante'] = 30
+                    bloqueados.append(proceso_en_ejecucion)
+                
+                proceso_en_ejecucion = None
+                tiempo_so_restante = 10 # Cambio de contexto
+        
+        # 5. ¿Hay proceso listo para cargar en CPU?
+        if not proceso_en_ejecucion and listos and tiempo_so_restante == 0:
+            # FIFO: el primero de la cola
+            proceso_en_ejecucion = listos.pop(0)
+            proceso_en_ejecucion['estado'] = 'EJECUTANDO'
+            print(f" -> S.O. despacha a {proceso_en_ejecucion['nombre']}. (Intervención S.O. 10ut)")
+            tiempo_so_restante = 10
+            # No lo ejecutamos en este ciclo porque el SO está haciendo el cambio
+            
+        # Si no hay nada que hacer, pero faltan cosas por terminar (CPU ociosa)
+        if not proceso_en_ejecucion and not procesos_llegados and tiempo_so_restante == 0:
+            print(" -> CPU Ociosa...")
+
+        # Avanzar el reloj
+        tiempo_actual += 10
+
+    print(f"\n>>> FIN DE LA SIMULACIÓN en tiempo {tiempo_actual} <<<")
+
+def srtf(procesos):
+    print("\n>>> INICIANDO SIMULACIÓN SRTF <<<")
+    print("Nota: El algoritmo de SRTF requiere una lógica similar a FIFO pero ordenando")
+    print("la cola de 'listos' por el tiempo restante de su ráfaga actual y permitiendo desalojo.")
+    # ¡Te dejo esta parte para que apliques la lógica de desalojo comparando ráfagas!

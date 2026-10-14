@@ -134,6 +134,24 @@ def fifo(procesos): #fifito first in first out
             listos.append(p)
             procesos.remove(p)
 
+        #cpu esta ocupado?
+        if proceso_ejecutandose:
+            rafaga_actual = proceso_ejecutandose['rafagas'][0]
+            print(f"-> Ejecutando {proceso_ejecutandose['nombre']} (Rafaga restante: {rafaga_actual}ut)")
+
+            #se resta el tiempo ejecutado. el s.o usa 10ut
+            proceso_ejecutandose['rafagas'][0] -= 10
+
+            #se verifica si ya termino la rafaga actual
+            if proceso_ejecutandose['rafagas'][0] <= 0:
+                proceso_ejecutandose['rafagas'].pop(0) #la respectiva rafaga se remueve del queue
+                if not proceso_ejecutandose['rafagas']:
+                    print(f"-> {proceso_ejecutandose['nombre']} ha sido TERMINADO.")
+                else:
+                    print(f"-> {proceso_ejecutandose['nombre']} se BLOQUEA porque requiere E/S (30ut)")
+                    proceso_ejecutandose['estado'] = 'Bloqueado'
+                    proceso_ejecutandose['tiempo']
+
         
             
 

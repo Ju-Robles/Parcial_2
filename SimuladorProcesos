@@ -121,46 +121,75 @@ def fifo(procesos): #fifito first in first out
 
     #estados del cpu
     proceso_ejecutandose = None;
+    tiempo_so = 0 #10ut por cada estado
 
     #bucle de iteracion madre
-    while procesos or listos or bloqueados or proceso_ejecutandose > 0:
-        print("Tiempo {tiempo_actual} ut")
+    while procesos or listos or bloqueados or proceso_ejecutandose or tiempo_so > 0:
+        print(f"Tiempo {tiempo_actual} ut")
 
-        #la prioridad es la carga asi que primero se chequea si uno quiere entrar
+        if tiempo_so > 0:
+            print("-> El sistema operativo esta ocupado")
+            tiempo_so -= 10
+
+        #la cpu esta ocupada? el s.o esta ocupado?
+        elif  proceso_ejecutandose:
+            rafaga_actual = proceso_ejecutandose['rafagas'][0]
+            print(f"-> Ejecutando {proceso_ejecutandose['nombre']} (Rafaga restante: {rafaga_actual}ut)")
+            proceso_ejecutandose['rafagas'][0] -= 10
+
+            #en caso de que termino la rafaga actual
+            if proceso_ejecutandose['rafagas'][0] <= 0:
+                proceso_ejecutandose['rafagas'].pop(0)
+
+                if not proceso_ejecutandose['rafagas']:
+                    print(f" -> {proceso_ejecutandose['nombre']} TERMINO su ejecucion.")
+                else:
+                    print(f"-> {proceso_ejecutandose['nombre']} esta BLOQUEADO porque requiere E/S (30ut)")
+                    proceso_ejecutandose['estado'] = 'Bloqueado'
+                    proceso_ejecutandose['tiempo_bloqueo_restante'] = 30
+                    bloqueados.append(proceso_ejecutandose)
+
+            proceso_ejecutandose = None
+            tiempo_so = 10
+
+    #hay un proceso que debe ser cargado?
         procesos_nuevos = [p for p in procesos if p['tiempo_llegada'] == tiempo_actual]
         for p in procesos_nuevos:
-            print(f"-> {p['nombre']} ha llegado a la cola.")
-            p['estado'] = 'Listo'
+            print(f"-> {p['nombre']} ha sido cargado. Esta LISTO para ejecutar.")
+            p['estado']= 'Listo'
             listos.append(p)
             procesos.remove(p)
 
-        
+            if tiempo_so == 0 and not proceso_ejecutandose:
+                tiempo_so = 10 
 
-        #cpu esta ocupado?
-        if proceso_ejecutandose:
-            rafaga_actual = proceso_ejecutandose['rafagas'][0]
-            print(f"-> Ejecutando {proceso_ejecutandose['nombre']} (Rafaga restante: {rafaga_actual}ut)")
+        for p in bloqueados[:]:
+            p['tiempo_bloqueo_restante'] -= 10
+            if p['tiempo_bloqueo_restante'] <= 0:
+                print(f"-> {p['nombre']} ha finalizado su E/S. Esta LISTO para ejecutar.")
+                p['estado'] = 'Listo'
+                bloqueados.remove(p)
+                listos.append(p)
 
-            #se resta el tiempo ejecutado. el s.o usa 10ut
-            proceso_ejecutandose['rafagas'][0] -= 10
+        if not proceso_ejecutandose and tiempo_so == 0:
+            if listos:
+                #FIFO (First in First Out) saca el primero de la cola
+                proceso_ejecutandose = listos.pop(0)
+                proceso_ejecutandose['estado'] = 'Ejecutando'
+                print(f"-> S.O ejecuta a {proceso_ejecutandose['nombre']}.")
+            else:
+                if not procesos_nuevos and not bloqueados:
+                    print("-> La CPU no esta ejecutando un proceso actualmente.")
 
-            #se verifica si ya termino la rafaga actual
-            if proceso_ejecutandose['rafagas'][0] <= 0:
-                proceso_ejecutandose['rafagas'].pop(0) #la respectiva rafaga se remueve del queue
-                if not proceso_ejecutandose['rafagas']:
-                    #si no hay mas rafagas, el proceso se termina.
-                    print(f"-> {proceso_ejecutandose['nombre']} ha sido TERMINADO.")
-                else:
-                    #en caso de si tener mas rafagas, se asignan los respectivos 30ut que requiere la E/S
-                    print(f"-> {proceso_ejecutandose['nombre']} se BLOQUEA porque requiere E/S (30ut)")
-                    proceso_ejecutandose['estado'] = 'Bloqueado'
-                    proceso_ejecutandose['tiempo_restante_bloqueo'] = 30
-                    bloqueados.append(proceso_ejecutandose)
+        tiempo_actual += 10
 
-                
+    print("-----------------------------------")
+    print("        FIN DE LA SIMULACION       ")
+    print("-----------------------------------")
+    print(f"-> La simulacion duro hasta {tiempo_actual}ut ")
+    print("-----------------------------------")
+    print("\n")
 
-        
-            
 
 
 #def srtf(procesos): #mas cortito primero CON DESALOJO

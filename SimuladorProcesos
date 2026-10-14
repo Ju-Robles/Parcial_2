@@ -108,6 +108,7 @@ def simular_ejecucion(procesos): #aca habia pensado en hacer un menu para elegir
 
 def fifo(procesos): #fifito first in first out
 
+#se muestra el algoritmo que fue seleccionado
     print("--------------------------------")
     print("     ALGORITMO SELECCIONADO:    ")
     print("               FIFO             ")
@@ -119,70 +120,101 @@ def fifo(procesos): #fifito first in first out
     listos = []
     bloqueados = []
 
-    #estados del cpu
+    #estados del cpu y del s.o
     proceso_ejecutandose = None;
     tiempo_so = 0 #10ut por cada estado
 
     #bucle de iteracion madre
     while procesos or listos or bloqueados or proceso_ejecutandose or tiempo_so > 0:
+        #se muestra el tiempo actual en el que se encuentra el s.o
         print(f"Tiempo {tiempo_actual} ut")
-
+    #esta ocupado el s.o?
         if tiempo_so > 0:
             print("-> El sistema operativo esta ocupado")
             tiempo_so -= 10
 
-        #la cpu esta ocupada? el s.o esta ocupado?
+        #si esta libre el s.o, se verifica si hay un proceso ejecutandose en la cpu
         elif  proceso_ejecutandose:
+            #obtiene el tiempo restante de la rafaga actual
             rafaga_actual = proceso_ejecutandose['rafagas'][0]
             print(f"-> Ejecutando {proceso_ejecutandose['nombre']} (Rafaga restante: {rafaga_actual}ut)")
             proceso_ejecutandose['rafagas'][0] -= 10
 
             #en caso de que termino la rafaga actual
             if proceso_ejecutandose['rafagas'][0] <= 0:
+                #se elmina la rafaga ya que termino
                 proceso_ejecutandose['rafagas'].pop(0)
-
+                
                 if not proceso_ejecutandose['rafagas']:
                     print(f" -> {proceso_ejecutandose['nombre']} TERMINO su ejecucion.")
                 else:
+                    #si quedan mas rafagas es porque necesita entrada salida ou yeah
                     print(f"-> {proceso_ejecutandose['nombre']} esta BLOQUEADO porque requiere E/S (30ut)")
+                    #la entrada salida son 30ut asi q cambiamos el estado a bloqueado
                     proceso_ejecutandose['estado'] = 'Bloqueado'
                     proceso_ejecutandose['tiempo_bloqueo_restante'] = 30
+                    #se agrega a la blocked list por ser un pesado q necesita e/s re molesto mal
                     bloqueados.append(proceso_ejecutandose)
 
+            #LIBERAMOS A LA CPU asi puede recibir otro procesito
             proceso_ejecutandose = None
+            #el s.o necesita 10ut segun el erasovich
             tiempo_so = 10
 
+
+
     #hay un proceso que debe ser cargado?
+        #procesos cuya llegada coincida con el tiempo actual B)
         procesos_nuevos = [p for p in procesos if p['tiempo_llegada'] == tiempo_actual]
+        #se recorren los procesos  o proceso que acabn de llegar
         for p in procesos_nuevos:
             print(f"-> {p['nombre']} ha sido cargado. Esta LISTO para ejecutar.")
+            #CAMBIAMOS EL PROCESO A LISTO YEA
             p['estado']= 'Listo'
+            #esta al final de la cola por ser el ultimo
             listos.append(p)
+            #fuera de la lista de nuevos
             procesos.remove(p)
-
+        #si el s.o esta ocioso realiza la carga
             if tiempo_so == 0 and not proceso_ejecutandose:
                 tiempo_so = 10 
 
+
+    #hay un proceso bloq?
+    #revisa los procesos bloq por una maldita entrada salidita
+    #el [:] es para recorrer una COPIA de la list ENTERA y eliminar cosas de la list OG sin problema
         for p in bloqueados[:]:
+            #-10 ut al tiempo de bloq
             p['tiempo_bloqueo_restante'] -= 10
+            #si el tiempo de E/S termino el proceso vuelve a estar listovich
             if p['tiempo_bloqueo_restante'] <= 0:
                 print(f"-> {p['nombre']} ha finalizado su E/S. Esta LISTO para ejecutar.")
                 p['estado'] = 'Listo'
+                #BANEADO de la lista de bloq por el momento
                 bloqueados.remove(p)
+                #se va al final de la cola de listos agua y ajo
                 listos.append(p)
 
+
+    #hay un proceso listo? hay un proceso que se pueda exe?
+
+        #si hay procesos esperando, se elige el primero de la cola grr
         if not proceso_ejecutandose and tiempo_so == 0:
             if listos:
                 #FIFO (First in First Out) saca el primero de la cola
                 proceso_ejecutandose = listos.pop(0)
+                #su estado ahora es ejecutandose 
                 proceso_ejecutandose['estado'] = 'Ejecutando'
                 print(f"-> S.O ejecuta a {proceso_ejecutandose['nombre']}.")
             else:
+                #si no hay procesos listos nuevos o bloq la CPU esta de vacation ou yea
                 if not procesos_nuevos and not bloqueados:
                     print("-> La CPU no esta ejecutando un proceso actualmente.")
 
+#Se avanzan las 10ut del s.o para el siguiente bucleeeeeeee
         tiempo_actual += 10
 
+#ya terminado el buclesovich se muestra el final result que de todas maneras esta mal pero bueno
     print("-----------------------------------")
     print("        FIN DE LA SIMULACION       ")
     print("-----------------------------------")

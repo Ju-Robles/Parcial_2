@@ -123,7 +123,7 @@ def fifo(procesos): #fifito first in first out
     proceso_ejecutandose = None;
 
     #bucle de iteracion madre
-    while procesos or listos or bloqueados or proceso_ejecutandose > 0
+    while procesos or listos or bloqueados or proceso_ejecutandose > 0:
         print("Tiempo {tiempo_actual} ut")
 
         #la prioridad es la carga asi que primero se chequea si uno quiere entrar
@@ -165,12 +165,18 @@ def fifo(procesos): #fifito first in first out
 
 #def srtf(procesos): #mas cortito primero CON DESALOJO
 
-def imprimir_diagrama(procesos): #para imprimir al final de cada simulacion algo similar al excel
-    if not procesos:
-        print("No hay procesos cargados.")
-        return
-    else:
-        
+#def imprimir_diagrama(procesos): #para imprimir al final de cada simulacion algo similar al excel
+ #   if not procesos:
+  #      print("No hay procesos cargados.")
+   #     return
+    #else:
+     #   tiempo_total= len(procesos[0]['historial'])
+#
+ #       print("\n|----------------------------------------------------|")
+  #      print("|             DIAGRAMA TIEMPO / PROCESO              |")
+   #     print("|----------------------------------------------------|")
+
+
 
 
 

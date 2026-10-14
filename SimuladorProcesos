@@ -146,11 +146,13 @@ def fifo(procesos): #fifito first in first out
             if proceso_ejecutandose['rafagas'][0] <= 0:
                 proceso_ejecutandose['rafagas'].pop(0) #la respectiva rafaga se remueve del queue
                 if not proceso_ejecutandose['rafagas']:
+                    #si no hay mas rafagas, el proceso se termina.
                     print(f"-> {proceso_ejecutandose['nombre']} ha sido TERMINADO.")
                 else:
+                    #en caso de si tener mas rafagas, se asignan los respectivos 30ut que requiere la E/S
                     print(f"-> {proceso_ejecutandose['nombre']} se BLOQUEA porque requiere E/S (30ut)")
                     proceso_ejecutandose['estado'] = 'Bloqueado'
-                    proceso_ejecutandose['tiempo']
+                    proceso_ejecutandose['tiempo_restante_bloqueo'] = 30
 
         
             

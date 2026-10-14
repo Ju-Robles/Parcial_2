@@ -229,6 +229,9 @@ def main():
         elif opcion == 4:
             print("Gracias por usar el programa!")
             break
+        elif opcion == 666:
+            print("ESTA ATRAS TUYO. NO LO MIRES.")
+            break
         else:
             print("Opción inválida. Por favor, seleccione una opción del menu.")
 

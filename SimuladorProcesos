@@ -165,7 +165,14 @@ def fifo(procesos): #fifito first in first out
 
 #def srtf(procesos): #mas cortito primero CON DESALOJO
 
-#def imprimir_diagrama(procesos): #para imprimir al final de cada simulacion algo similar al excel
+def imprimir_diagrama(procesos): #para imprimir al final de cada simulacion algo similar al excel
+    if not procesos:
+        print("No hay procesos cargados.")
+        return
+    else:
+        
+
+
 
 def main():
     #lista para guardar procesos en el main

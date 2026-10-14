@@ -62,7 +62,7 @@ def cargar_procesos(): # para cargar procesos, no se si esta bien pero creo que 
         #esto agrega el proceso a la lista de procesos 
         procesos.append(proceso)
         #devuelve la lista completa de procesos cargados
-        return procesos
+     return procesos
 
 def mostrar_procesos(procesos): #para mostrar los procesos cargados, validar que existan en prmer lugar
 
@@ -221,7 +221,6 @@ def fifo(procesos): #fifito first in first out
     print(f"-> La simulacion duro hasta {tiempo_actual}ut ")
     print("-----------------------------------")
     print("\n")
-
 
 
 #def srtf(procesos): #mas cortito primero CON DESALOJO

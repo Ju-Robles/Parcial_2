@@ -223,7 +223,38 @@ def fifo(procesos): #fifito first in first out
     print("\n")
 
 
-#def srtf(procesos): #mas cortito primero CON DESALOJO
+def srtf(procesos): #mas cortito primero CON DESALOJO
+    print("--------------------------------")
+    print("     ALGORITMO SELECCIONADO:    ")
+    print(" MAS CORTO PRIMERO CON DESALOJO ")
+    print("--------------------------------")
+
+    tiempo_actual=0; #lo empezamos en 0 como en fifo por la misma razón, es el principio
+
+    #listas de los estados de los procesos
+    listos=[]
+    bloqueados=[]
+
+    #estados del cpu y del sistema oeprativo
+    proceso_ejecutandose=None
+    tiempo_so=0
+
+    while procesos or listos or bloqueados or proceso_ejecutandose or tiempo_so > 0:
+        #se muestra el tiempo actual del sistema operativo
+        print(f"Tiempo {tiempo_actual} ut")
+
+        #preguntamos al sistema operativo si está ocupado
+        if tiempo_so > 0:
+            print("-> El sistema operativo esta ocupado")
+            tiempo_so -= 10
+        elif proceso_ejecutandose:
+            #tiempo restante de la ráfaga actual
+            rafaga_actual = proceso_ejecutandose['rafagas'][0]
+            print(f"-> Ejecutando {proceso_ejecutandose['nombre']} (Rafaga restante: {rafaga_actual}ut)")
+            proceso_ejecutandose['rafagas'][0] -= 10
+
+
+
 
 #def imprimir_diagrama(procesos): #para imprimir al final de cada simulacion algo similar al excel
  #   if not procesos:

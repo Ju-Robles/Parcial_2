@@ -229,6 +229,9 @@ def srtf(procesos): #mas cortito primero CON DESALOJO
     print(" MAS CORTO PRIMERO CON DESALOJO ")
     print("--------------------------------")
 
+    # Guardamos los nombres d los procesos para mostrarlos en la tabla después
+    #nombres_procesos = [p['nombre'] for p in procesos] 
+
     tiempo_actual=0; #lo empezamos en 0 como en fifo por la misma razón, es el principio
 
     #listas de los estados de los procesos
@@ -329,18 +332,19 @@ def srtf(procesos): #mas cortito primero CON DESALOJO
     print("-----------------------------------")
     print("\n")
             
-            
 
-#def imprimir_diagrama(procesos): #para imprimir al final de cada simulacion algo similar al excel
- #   if not procesos:
-  #      print("No hay procesos cargados.")
-   #     return
-    #else:
-     #   tiempo_total= len(procesos[0]['historial'])
-#
- #       print("\n|----------------------------------------------------|")
-  #      print("|             DIAGRAMA TIEMPO / PROCESO              |")
-   #     print("|----------------------------------------------------|")
+
+def imprimir_diagrama(procesos): #para imprimir al final de cada simulacion algo similar al excel
+    if not procesos:
+        print("No hay procesos cargados.")
+        return
+    else:
+
+        print("\n|----------------------------------------------------|")
+        print("|             DIAGRAMA TIEMPO / PROCESO              |")
+        print("|----------------------------------------------------|")
+
+        
 
 
 

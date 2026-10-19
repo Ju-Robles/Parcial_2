@@ -252,9 +252,84 @@ def srtf(procesos): #mas cortito primero CON DESALOJO
             rafaga_actual = proceso_ejecutandose['rafagas'][0]
             print(f"-> Ejecutando {proceso_ejecutandose['nombre']} (Rafaga restante: {rafaga_actual}ut)")
             proceso_ejecutandose['rafagas'][0] -= 10
+            
+            if proceso_ejecutandose['rafagas'][0] <= 0:
+                #se elimina la ráfaga ya que terminó
+                proceso_ejecutandose['rafagas'].pop(0)
+                
+                if not proceso_ejecutandose['rafagas']:
+                    print(f" -> {proceso_ejecutandose['nombre']} TERMINO su ejecucion.")
+                else:
+                    #si quedan ráfgas es pq necesita entrada salida
+                    print(f"-> {proceso_ejecutandose['nombre']} esta BLOQUEADO porque requiere E/S (30ut)")
 
+                    proceso_ejecutandose['estado'] = 'Bloqueado'
+                    proceso_ejecutandose['tiempo_bloqueo_restante'] = 30
 
+                    #se agrega a la lista de bloqueados
+                    bloqueados.append(proceso_ejecutandose)
 
+            #liberando el sistema,pobechito es chambeador
+            proceso_ejecutandose = None
+            tiempo_so = 10
+
+        #Llegada de nuevos y Bloqueados 
+
+        # ¿Hay procesos nuevos que deban ser cargados en este tiempo?
+        procesos_nuevos = [p for p in procesos if p['tiempo_llegada'] == tiempo_actual]
+        for p in procesos_nuevos:
+            print(f"-> {p['nombre']} ha sido cargado. Esta LISTO para ejecutar.")
+            p['estado'] = 'Listo'
+            listos.append(p)
+            procesos.remove(p)
+
+        # ¿Hay procesos bloqueados terminando su E/S?
+        for p in bloqueados[:]:
+            p['tiempo_bloqueo_restante'] -= 10
+            if p['tiempo_bloqueo_restante'] <= 0:
+                print(f"-> {p['nombre']} ha finalizado su E/S. Esta LISTO para ejecutar.")
+                p['estado'] = 'Listo'
+                bloqueados.remove(p)
+                listos.append(p)
+
+        #SRTF y desalojo
+        if tiempo_so == 0:
+            #lista para pasar a toditos los candidatos de listo a ser mas corto primero
+            candidatos = listos.copy()
+
+            if proceso_ejecutandose:
+                #miramos a los de listo y al proceso ejecutandose actualmente
+                candidatos.append(proceso_ejecutandose)
+
+            if candidatos:
+                #min funciona para buscar el más chico y con el key podemos hacer la busqueda mas exacta para q no se quede buscando y buscando 
+                mas_corto = min(candidatos, key=lambda x: x['rafagas'][0])
+
+                #comparamos el mas corto con el proceso actual
+                if mas_corto == proceso_ejecutandose:
+                    pass
+                else:
+                    if proceso_ejecutandose is not None:
+                        #pasamos el proceso ejecutandose, el cual no es el mas corto a listos y ponemos el mas corto a ejecutar jiji
+                        listos.append(proceso_ejecutandose)
+
+                    proceso_ejecutandose= mas_corto
+                    #sacamos de listos el mas corto para que no cause error al repetirse algo que ya estaríamos ejecutando, no queremos q se pisen las cosas
+                    listos.remove(mas_corto)
+                    proceso_ejecutandose['estado'] = 'Ejecutando'
+                    print(f"-> S.O. desaloja/ejecuta a {proceso_ejecutandose['nombre']}.")    
+
+        # Avanzamos el tiempo del bucle
+        tiempo_actual += 10
+
+    print("-----------------------------------")
+    print("        FIN DE LA SIMULACION       ")
+    print("-----------------------------------")
+    print(f"-> La simulacion duro hasta {tiempo_actual}ut ")
+    print("-----------------------------------")
+    print("\n")
+            
+            
 
 #def imprimir_diagrama(procesos): #para imprimir al final de cada simulacion algo similar al excel
  #   if not procesos:

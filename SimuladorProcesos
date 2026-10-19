@@ -1,11 +1,12 @@
-def leer_entero(mensaje): #funcion para leer un numero entero asi no rompe todo el programa si el usuario mete cualq cosa
-    while True:
-        try:
+def leer_entero(mensaje): #funcion para pedir numeros por teclado y validar q sean enteros asi no tira error
+   while True:    
+        try: #bucle infinito q solo se corta cuando se devuelve un int
             return int(input(mensaje))
         except ValueError:
+            #si falla por meter letras o simbolos se pide que reintente
             print("Por favor, ingrese un número entero.")
 
-def menu(): #menu de opciones, creo q el nombre puede ser mejor pq esta feo, pero bueno
+def menu(): #funcion que muestra el menu principal por pantalla
     print("|-----------------------------------|")
     print("|        SIMULADOR DE PROCESOS      |")
     print("|-----------------------------------|")
@@ -16,52 +17,66 @@ def menu(): #menu de opciones, creo q el nombre puede ser mejor pq esta feo, per
     print("|-----------------------------------|")
     return (leer_entero("Seleccione una opción: ")) #puse para q devuelva la opcion en la misma funcion
 
-def cargar_procesos(): # para cargar procesos, no se si esta bien pero creo que va queriendo
-    #aca se guardarian los procesos en una lista
+def cargar_procesos(): #funcion para edirle al usuario todos los datos de los procesos a simular
+    #lista vacia para ir guardando cada proceso
     procesos = []
-    #cantidad de procesos, se valida qe esten entre 1 y 4
+
+    #el usuario elige la cantidad de procesos
     cantidad = leer_entero("Ingrese la cantidad de procesos a cargar (1 a 4): ")
 
+    #validamos con un while que sea entre 1 y 4 procesos
     while cantidad < 1 or cantidad > 4:
         print("Por favor, ingrese un número entre 1 y 4.")
         cantidad = leer_entero("Ingrese la cantidad de procesos a cargar (1 a 4): ")
-    #cargando los procesitos uno por uno
+
+    #cargando los procesitos uno por uno con un for
     for i in range(cantidad):
         print("Proceso P", i + 1,": ")
-        #se pregunta en que unidad de tiempo llega el proceso, se valida que no sea negativo
+
+        #pedimos en que ut entra el proceso
         tiempo_llegada = leer_entero("Ingrese el tiempo de llegada: ")
 
-        while tiempo_llegada < 0:
-            print("El tiempo de llegada no puede ser negativo.")
-            tiempo_llegada = leer_entero("Ingrese el tiempo de llegada: ")
-        #se pregunta cuantas rafagas de cpu tiene el proceso, se valida que sea entre 1 y 4
+        #validacion pq ademas de no ser negativo, el sistema solo avanza de 10 en 10
+        while tiempo_llegada < 0 or tiempo_llegada % 10 != 0:
+             print("El tiempo de llegada del proceso no puede ser negativo y debe ser un multiplo de 10.")
+             tiempo_llegada = leer_entero("Ingrese el tiempo de llegada: ")
+
+        #preguntamos cuantas rafagas de ejecucion va a tener cada proceso
         cantidad_rafagas = leer_entero("Ingrese la cantidad de ráfagas (1 a 4): ")
 
+        #validamos que la cantidad de rafagas este dentro del rango
         while cantidad_rafagas < 1 or cantidad_rafagas > 4:
             print("Debe ingresar al menos 1 ráfaga y no más de 4.")
             cantidad_rafagas = leer_entero("Ingrese la cantidad de ráfagas (1 a 4): ")
         #lista que guarda las rafagas del proceso
         rafagas = []
+
+        #otro bucle para pedir la duracion de las rafagas
         for j in range(cantidad_rafagas):
             tiempo_cpu = leer_entero(f"Ingrese la duración de la ráfaga {j + 1}: ")
 
-            while tiempo_cpu < 0:
-                print("La duración de la ráfaga no puede ser negativa.")
+            #validamos que la rafaga sea un multiplo de 10
+            while tiempo_cpu <= 0 or tiempo_cpu % 10 != 0:
+                print("La duracion de la rafaga debe ser mayor a 0 y multiplo de 10.")
                 tiempo_cpu = leer_entero(f"Ingrese la duración de la ráfaga {j + 1}: ")
+            
+            #si pasa a validacion se agrega la duracion de la rafaga a la lista
             rafagas.append(tiempo_cpu)
+
         #diccionario de procesos pq python no tiene struct
         proceso = {
             'nombre': f"P{i + 1}",
             'tiempo_llegada': tiempo_llegada, #en cual unidad de tiempo entra el proceso al queue
-            'rafagas_originales': rafagas, #ingresadas por el usuario
-            #creo que deberiamos tambien hacer otra lista de rafagas pero que se consuma con el tiempo
+            'rafagas_originales': rafagas, #rafagas originales ingresadas por el usuario
             'rafagas': list(rafagas), #lista de rafagas que se consume a medida que se ejecuta el proceso
             'estado': 'Nuevo', #estado inicial del proceso (la idea es que se vaya atualizando)
             'tiempo_restante_bloqueo': 0, #tiempo restante de bloqueo para cuando salga a e/s, se inicializa en 0 pq no esta bloq al principio
          }
+        
         #esto agrega el proceso a la lista de procesos 
         procesos.append(proceso)
-        #devuelve la lista completa de procesos cargados
+
+     #devuelve la lista completa de procesos cargados
     return procesos
 
 def mostrar_procesos(procesos): #para mostrar los procesos cargados, validar que existan en prmer lugar
@@ -78,14 +93,15 @@ def mostrar_procesos(procesos): #para mostrar los procesos cargados, validar que
             print(f"Nombre: {proceso['nombre']}")
             print(f"Tiempo de llegada: {proceso['tiempo_llegada']}")
             print(f"Ráfagas de CPU: {proceso['rafagas']}")
-            print("|-----------------------------------|")
+            print("|-----------------------------------|\n")
     
 
-def simular_ejecucion(procesos): #aca habia pensado en hacer un menu para elegir el algoritmo de planificacion
-    #se valida que existan procesos antes de simular ejecucion
+def simular_ejecucion(procesos): #submenu para elegir el algoritmo de planificacion
+    #validamos que primero haya algo cargado
     if not procesos:
         print("No hay procesos cargados. Por favor, cargue los procesos primero.")
         return
+    
     #menu para elegir el algoritmo de planificacion
     print("------------------------------------------")
     print("        ALGORITMO DE PLANIFICACION        ")
@@ -94,8 +110,11 @@ def simular_ejecucion(procesos): #aca habia pensado en hacer un menu para elegir
     print(" 2. SRTF (Mas corto primero con desalojo) ")
     print(" 3. Volver al menu principal              ")
     print("------------------------------------------")
+
+    #guardamos que algoritmo eligio el user
     opcion_algoritmo = leer_entero("Seleccione un algoritmo de planificación: ") #guardamos la opcion del menu en la variable opcion_algoritmo
 
+    #segun la opcion llamamos a la funcion del algoritmo correspondiente
     if opcion_algoritmo == 1: #si es 1, se ejecuta FIFO
         fifo(procesos)
     elif opcion_algoritmo == 2: #si es 2, se ejecuta SRTF
@@ -105,116 +124,145 @@ def simular_ejecucion(procesos): #aca habia pensado en hacer un menu para elegir
     else:
         print("Opción inválida. Por favor, seleccione una opcion del menu.") #si no es ninguna, se dice q esta mal
 
+#funcion para armar una copia limpia desde 0 antes de cada simulacion
+def copiar_procesos(procesos_originales):
+    # Crea una copia limpia de los procesos para no borrar los datos originales al simular
+    copia = []
+    for p in procesos_originales:
+        copia.append({
+            'nombre': p['nombre'],
+            'tiempo_llegada': p['tiempo_llegada'],
+            'rafagas_originales': list(p['rafagas_originales']),
+            #se reinician las rafagas copiando los valores de rafagas originales
+            'rafagas': list(p['rafagas_originales']),
+            'estado': 'Nuevo',
+            'tiempo_bloqueo_restante': 0
+        })
+    return copia
 
-def fifo(procesos): #fifito first in first out
+
+def fifo(procesos_originales): #fifito first in first out
 
 #se muestra el algoritmo que fue seleccionado
     print("--------------------------------")
     print("     ALGORITMO SELECCIONADO:    ")
     print("               FIFO             ")
     print("--------------------------------")
+
+    #trabajamos con la copia para no alterar los datos originales
+    procesos = copiar_procesos(procesos_originales)
+
+    #guardamos solo los nombres en otra lista para poder mostrarlos en el diagrama
+    nombres_procesos = [p['nombre'] for p in procesos]
+
+    #guardamos que paso en cada unidad de tiempo
+    historial = []
     
-    tiempo_actual = 0; #inicia en 0 porque es el principio we
+    tiempo_actual = 0; #inicia en 0 porque es el principio 
 
     #listas para cada estado de los procesos
+    en_espera = []
     listos = []
     bloqueados = []
 
-    #estados del cpu y del s.o
+    #estados del cpu 
     proceso_ejecutandose = None;
-    tiempo_so = 0 #10ut por cada estado
 
     #bucle de iteracion madre
-    while procesos or listos or bloqueados or proceso_ejecutandose or tiempo_so > 0:
+    while procesos or en_espera or listos or bloqueados or proceso_ejecutandose:
         #se muestra el tiempo actual en el que se encuentra el s.o
         print(f"Tiempo {tiempo_actual} ut")
-    #esta ocupado el s.o?
-        if tiempo_so > 0:
-            print("-> El sistema operativo esta ocupado")
-            tiempo_so -= 10
 
-        #si esta libre el s.o, se verifica si hay un proceso ejecutandose en la cpu
-        elif  proceso_ejecutandose:
-            #obtiene el tiempo restante de la rafaga actual
-            rafaga_actual = proceso_ejecutandose['rafagas'][0]
-            print(f"-> Ejecutando {proceso_ejecutandose['nombre']} (Rafaga restante: {rafaga_actual}ut)")
-            proceso_ejecutandose['rafagas'][0] -= 10
+        #variables para anotar que hizo el SO y quien uso la CPU
+        accion_so = ""
+        cpu_actual = ""
 
-            #en caso de que termino la rafaga actual
-            if proceso_ejecutandose['rafagas'][0] <= 0:
-                #se elmina la rafaga ya que termino
-                proceso_ejecutandose['rafagas'].pop(0)
-                
-                if not proceso_ejecutandose['rafagas']:
-                    print(f" -> {proceso_ejecutandose['nombre']} TERMINO su ejecucion.")
-                else:
-                    #si quedan mas rafagas es porque necesita entrada salida ou yeah
-                    print(f"-> {proceso_ejecutandose['nombre']} esta BLOQUEADO porque requiere E/S (30ut)")
-                    #la entrada salida son 30ut asi q cambiamos el estado a bloqueado
-                    proceso_ejecutandose['estado'] = 'Bloqueado'
-                    proceso_ejecutandose['tiempo_bloqueo_restante'] = 30
-                    #se agrega a la blocked list por ser un pesado q necesita e/s re molesto mal
-                    bloqueados.append(proceso_ejecutandose)
+        #vemos que procesos de la lista original tienen un tiempo de llegada menor o igual al reloj 
+        procesos_nuevos = [p for p in procesos if p['tiempo_llegada'] <= tiempo_actual]
+        for p in procesos_nuevos:
+            en_espera.append(p) #los ponemos para que el SO los cargue
+            procesos.remove(p) #los sacamos de pendientes para no volver a meterlos
+
+        # Guardamos foto de bloqueados al inicio de estas 10ut para la tabla
+        bloq_foto = [p['nombre'] for p in bloqueados]
+
+        #los procesos que están bloqueados haciendo E/S les descontamos 10 UT de su espera
+        for p in bloqueados:
+            if p['tiempo_bloqueo_restante'] > 0:
+                p['tiempo_bloqueo_restante'] -= 10
+
+        #en una lista auxiliar vemos cuales procesos cumplieron sus 30ut
+        bloq_terminados = [p for p in bloqueados if p['tiempo_bloqueo_restante'] <= 0]
+
+        #si el proceso en la cpu justo termino su rafga
+        if proceso_ejecutandose and proceso_ejecutandose['rafagas'][0] <= 0:
+            #eliminamos esa rafaga usando pop(0)
+            proceso_ejecutandose['rafagas'].pop(0)
+
+            #si la lista esta vacia significa que el proceso termino
+            if not proceso_ejecutandose['rafagas']:
+                print(f" -> S.O. finaliza a {proceso_ejecutandose['nombre']} (Termino su ejecucion).")
+                accion_so = f"6{proceso_ejecutandose['nombre']}"
+            else:
+                #si quedan mas rafagas es porque necesita entrada salida ou yeah
+                print(f"-> S.O. envía a {proceso_ejecutandose['nombre']} a Bloqueado por E/S (30ut)")
+                accion_so = f"3{proceso_ejecutandose['nombre']}"
+                proceso_ejecutandose['estado'] = 'Bloqueado'
+                proceso_ejecutandose['tiempo_bloqueo_restante'] = 30
+                #se agrega a la blocked list por necesitar e/s
+                bloqueados.append(proceso_ejecutandose)
 
             #LIBERAMOS A LA CPU asi puede recibir otro procesito
             proceso_ejecutandose = None
-            #el s.o necesita 10ut segun el erasovich
-            tiempo_so = 10
 
-
-
-    #hay un proceso que debe ser cargado?
-        #procesos cuya llegada coincida con el tiempo actual B)
-        procesos_nuevos = [p for p in procesos if p['tiempo_llegada'] == tiempo_actual]
-        #se recorren los procesos  o proceso que acabn de llegar
-        for p in procesos_nuevos:
-            print(f"-> {p['nombre']} ha sido cargado. Esta LISTO para ejecutar.")
-            #CAMBIAMOS EL PROCESO A LISTO YEA
-            p['estado']= 'Listo'
-            #esta al final de la cola por ser el ultimo
-            listos.append(p)
-            #fuera de la lista de nuevos
-            procesos.remove(p)
-        #si el s.o esta ocioso realiza la carga
-            if tiempo_so == 0 and not proceso_ejecutandose:
-                tiempo_so = 10 
-
-
-    #hay un proceso bloq?
-    #revisa los procesos bloq por una maldita entrada salidita
-    #el [:] es para recorrer una COPIA de la list ENTERA y eliminar cosas de la list OG sin problema
-        for p in bloqueados[:]:
-            #-10 ut al tiempo de bloq
-            p['tiempo_bloqueo_restante'] -= 10
-            #si el tiempo de E/S termino el proceso vuelve a estar listovich
-            if p['tiempo_bloqueo_restante'] <= 0:
-                print(f"-> {p['nombre']} ha finalizado su E/S. Esta LISTO para ejecutar.")
+        #si la CPU esta libre el S.O aprovecha para ejecutar una politica
+        elif not proceso_ejecutandose:
+            if en_espera: #la prioridad es la carga
+                p = en_espera.pop(0) #sacamos al primero que estaba intentando entrar
+                print(f"-> S.O. carga a {p['nombre']}. Esta Listo para ejecutar.")
+                accion_so = f"1{p['nombre']}" #carga proceso nuevo
                 p['estado'] = 'Listo'
-                #BANEADO de la lista de bloq por el momento
-                bloqueados.remove(p)
-                #se va al final de la cola de listos agua y ajo
                 listos.append(p)
 
-
-    #hay un proceso listo? hay un proceso que se pueda exe?
-
-        #si hay procesos esperando, se elige el primero de la cola grr
-        if not proceso_ejecutandose and tiempo_so == 0:
-            if listos:
+                #si un proceso termino su e/s lo manda a listos
+            elif bloq_terminados:
+                p = bloq_terminados[0]
+                print(f"-> {p['nombre']} ha finalizado su E/S. pasa a Listo.")
+                accion_so = f"4{p['nombre']}"
+                p['estado'] = 'Listo'
+                bloqueados.remove(p)
+                listos.append(p)
+                #si hay proceso en cola de listos despaha al primero a la CPU
+            elif listos:
                 #FIFO (First in First Out) saca el primero de la cola
                 proceso_ejecutandose = listos.pop(0)
-                #su estado ahora es ejecutandose 
                 proceso_ejecutandose['estado'] = 'Ejecutando'
-                print(f"-> S.O ejecuta a {proceso_ejecutandose['nombre']}.")
+                accion_so = f"2{proceso_ejecutandose['nombre']}"
+                print(f"-> S.O. despacha a {proceso_ejecutandose['nombre']} a la CPU.")
             else:
-                #si no hay procesos listos nuevos o bloq la CPU esta de vacation ou yea
-                if not procesos_nuevos and not bloqueados:
-                    print("-> La CPU no esta ejecutando un proceso actualmente.")
+                #si no hay procesos listos la CPU esta de vacation ou yea
+                print("-> La CPU no esta ejecutando un proceso actualmente.")
 
-#Se avanzan las 10ut del s.o para el siguiente bucleeeeeeee
+        #si hay un proceso y aun le queda rafaga actual:
+        else:
+            rafaga_actual = proceso_ejecutandose['rafagas'][0]
+            print(f"-> Ejecutando {proceso_ejecutandose['nombre']} (Rafaga restante: {rafaga_actual}ut)")
+            cpu_actual = proceso_ejecutandose['nombre'] #anotamos que este proceso uso la cpu en esta iteracion
+            proceso_ejecutandose['rafagas'][0] -= 10 #le restamos las 10ut que acaba de ejecutar
+
+        #Se avanzan las 10ut para el siguiente bucleeeeeeee
         tiempo_actual += 10
 
-#ya terminado el buclesovich se muestra el final result que de todas maneras esta mal pero bueno
+        #guardamos en el hisyorial tdos los datos de esta vuelta asi los usa el diagrama
+        historial.append({
+            'tiempo': tiempo_actual,
+            'so':accion_so,
+            'cpu': cpu_actual,
+            'listos': [p['nombre'] for p in listos], #solo guarda los nombres de los que estan listos
+            'bloqueados': bloq_foto
+        })
+
+#ya terminado el bucle es porque ya no queda ningun proceso
     print("-----------------------------------")
     print("        FIN DE LA SIMULACION       ")
     print("-----------------------------------")
@@ -222,108 +270,139 @@ def fifo(procesos): #fifito first in first out
     print("-----------------------------------")
     print("\n")
 
+    #se llama a la funcion que dibuja la tabla pasandole todo lo que se guardo en el historial 
+    imprimir_diagrama(historial, nombres_procesos)
 
-def srtf(procesos): #mas cortito primero CON DESALOJO
+
+def srtf(procesos_originales): #mas cortito primero CON DESALOJO
     print("--------------------------------")
     print("     ALGORITMO SELECCIONADO:    ")
     print(" MAS CORTO PRIMERO CON DESALOJO ")
     print("--------------------------------")
 
+    #copiamos los procesos para no perder los datos originales
+    procesos = copiar_procesos(procesos_originales)
     # Guardamos los nombres d los procesos para mostrarlos en la tabla después
-    #nombres_procesos = [p['nombre'] for p in procesos] 
+    nombres_procesos = [p['nombre'] for p in procesos]
+    historial = []
 
-    tiempo_actual=0; #lo empezamos en 0 como en fifo por la misma razón, es el principio
+    tiempo_actual=0; #lo empezamos en 0 
 
-    #listas de los estados de los procesos
+    #listas de los estados de los procesos (vacias)
+    en_espera = []
     listos=[]
     bloqueados=[]
 
-    #estados del cpu y del sistema oeprativo
+    #estados del cpu 
     proceso_ejecutandose=None
-    tiempo_so=0
 
-    while procesos or listos or bloqueados or proceso_ejecutandose or tiempo_so > 0:
+    #bucle madre de iteracion
+    while procesos or en_espera or listos or bloqueados or proceso_ejecutandose:
         #se muestra el tiempo actual del sistema operativo
         print(f"Tiempo {tiempo_actual} ut")
 
-        #preguntamos al sistema operativo si está ocupado
-        if tiempo_so > 0:
-            print("-> El sistema operativo esta ocupado")
-            tiempo_so -= 10
-        elif proceso_ejecutandose:
-            #tiempo restante de la ráfaga actual
-            rafaga_actual = proceso_ejecutandose['rafagas'][0]
-            print(f"-> Ejecutando {proceso_ejecutandose['nombre']} (Rafaga restante: {rafaga_actual}ut)")
-            proceso_ejecutandose['rafagas'][0] -= 10
-            
-            if proceso_ejecutandose['rafagas'][0] <= 0:
-                #se elimina la ráfaga ya que terminó
-                proceso_ejecutandose['rafagas'].pop(0)
-                
-                if not proceso_ejecutandose['rafagas']:
-                    print(f" -> {proceso_ejecutandose['nombre']} TERMINO su ejecucion.")
-                else:
-                    #si quedan ráfgas es pq necesita entrada salida
-                    print(f"-> {proceso_ejecutandose['nombre']} esta BLOQUEADO porque requiere E/S (30ut)")
+        accion_so = ""
+        cpu_actual = ""
 
-                    proceso_ejecutandose['estado'] = 'Bloqueado'
-                    proceso_ejecutandose['tiempo_bloqueo_restante'] = 30
-
-                    #se agrega a la lista de bloqueados
-                    bloqueados.append(proceso_ejecutandose)
-
-            #liberando el sistema,pobechito es chambeador
-            proceso_ejecutandose = None
-            tiempo_so = 10
-
-        #Llegada de nuevos y Bloqueados 
-
-        # ¿Hay procesos nuevos que deban ser cargados en este tiempo?
-        procesos_nuevos = [p for p in procesos if p['tiempo_llegada'] == tiempo_actual]
+        #revisamos si un proceso nuevo entra en este instante de tiempo
+        procesos_nuevos = [p for p in procesos if p['tiempo_llegada'] <= tiempo_actual]
         for p in procesos_nuevos:
-            print(f"-> {p['nombre']} ha sido cargado. Esta LISTO para ejecutar.")
-            p['estado'] = 'Listo'
-            listos.append(p)
+            en_espera.append(p)
             procesos.remove(p)
 
-        # ¿Hay procesos bloqueados terminando su E/S?
-        for p in bloqueados[:]:
-            p['tiempo_bloqueo_restante'] -= 10
-            if p['tiempo_bloqueo_restante'] <= 0:
-                print(f"-> {p['nombre']} ha finalizado su E/S. Esta LISTO para ejecutar.")
-                p['estado'] = 'Listo'
-                bloqueados.remove(p)
-                listos.append(p)
+        #foto de los bloq al inicio del turno para mostrar en el diagrama
+        bloq_foto = [p['nombre'] for p in bloqueados]
 
-        #SRTF y desalojo
-        if tiempo_so == 0:
+        #descontamos 10ut a los procesos que estan esperando e/s
+        for p in bloqueados:
+            if p['tiempo_bloqueo_restante'] > 0:
+                p['tiempo_bloqueo_restante'] -= 10
+
+        #vemos cuales terminaron su tiempo de bloqueo
+        bloq_terminados = [p for p in bloqueados if p['tiempo_bloqueo_restante'] <= 0]
+
+        #si el proceso que esta en CPU ua termino toda su rafaga actual
+        if proceso_ejecutandose and proceso_ejecutandose['rafagas'][0] <= 0:
+            proceso_ejecutandose['rafagas'].pop(0) #sacamos la rafaga terminada
+
+            if not proceso_ejecutandose['rafagas']:
+                print(f" -> S.O. finaliza a {proceso_ejecutandose['nombre']} (Termino su ejecucion).")
+                accion_so = f"6{proceso_ejecutandose['nombre']}"
+            else:
+                #si quedan ráfagas es pq necesita entrada salida
+                print(f"-> S.O. envía a {proceso_ejecutandose['nombre']} a Bloqueado por E/S (30ut)")
+                accion_so = f"3{proceso_ejecutandose['nombre']}"
+                proceso_ejecutandose['estado'] = 'Bloqueado'
+                proceso_ejecutandose['tiempo_bloqueo_restante'] = 30
+                bloqueados.append(proceso_ejecutandose)
+
+            proceso_ejecutandose = None #liberamos la CPU
+
+        #si hay procesos q recien llegan esperando, el SO los carga a la cola de listos
+        elif en_espera:
+            p = en_espera.pop(0)
+            print(f"-> S.O. carga a {p['nombre']}. Esta Listo para ejecutar.")
+            accion_so = f"1{p['nombre']}"
+            p['estado'] = 'Listo'
+            listos.append(p)
+
+        #si algun proceso termino su E/s, el SO lo devuelve a listo
+        elif bloq_terminados:
+            p = bloq_terminados[0]
+            print(f"-> {p['nombre']} ha finalizado su E/S. S.O. lo pasa a Listo.")
+            accion_so = f"4{p['nombre']}"
+            p['estado'] = 'Listo'
+            bloqueados.remove(p)
+            listos.append(p)
+
+        #Logica del mas corto primero con desalojo
+        else:
             #lista para pasar a toditos los candidatos de listo a ser mas corto primero
             candidatos = listos.copy()
 
+            #si hay uno ejecutandose, lo ponemos al principio para que en caso de empate lo priorice en vez de desalojar
             if proceso_ejecutandose:
-                #miramos a los de listo y al proceso ejecutandose actualmente
-                candidatos.append(proceso_ejecutandose)
+                candidatos.insert(0, proceso_ejecutandose)
 
             if candidatos:
                 #min funciona para buscar el más chico y con el key podemos hacer la busqueda mas exacta para q no se quede buscando y buscando 
                 mas_corto = min(candidatos, key=lambda x: x['rafagas'][0])
 
-                #comparamos el mas corto con el proceso actual
+                #si el mas corto es el mismo que ya estaba en la CPU, sigue su ejecucion
                 if mas_corto == proceso_ejecutandose:
-                    pass
+                    rafaga_actual = proceso_ejecutandose['rafagas'][0]
+                    print(f"-> Ejecutando {proceso_ejecutandose['nombre']} (Rafaga restante: {rafaga_actual}ut)")
+                    cpu_actual = proceso_ejecutandose['nombre']
+                    proceso_ejecutandose['rafagas'][0] -= 10
                 else:
+                    #si habia un proceso en la CPU pero aparecio uno mas corto en la cola de Listos, el SO desaloja
                     if proceso_ejecutandose is not None:
-                        #pasamos el proceso ejecutandose, el cual no es el mas corto a listos y ponemos el mas corto a ejecutar jiji
+                        print(f"-> S.O. desaloja a {proceso_ejecutandose['nombre']} porque {mas_corto['nombre']} es más corto.")
+                        accion_so = f"5{proceso_ejecutandose['nombre']}"
+                        proceso_ejecutandose['estado'] = 'Listo'
+                        #el proceso desalojado vuelve a Listo y liberamos el procesador
                         listos.append(proceso_ejecutandose)
+                        proceso_ejecutandose = None
+                    else:
+                        #si la cpu estaba ociosa, directamente ejecutamos al mas corto que encontramos
+                        proceso_ejecutandose= mas_corto
+                        #lo sacamos de la cola de listos para que no quede duplicado
+                        listos.remove(mas_corto)
+                        proceso_ejecutandose['estado'] = 'Ejecutando'
+                        accion_so = f"2{proceso_ejecutandose['nombre']}"
+                        print(f"-> S.O. desaloja/ejecuta a {proceso_ejecutandose['nombre']}.")    
 
-                    proceso_ejecutandose= mas_corto
-                    #sacamos de listos el mas corto para que no cause error al repetirse algo que ya estaríamos ejecutando, no queremos q se pisen las cosas
-                    listos.remove(mas_corto)
-                    proceso_ejecutandose['estado'] = 'Ejecutando'
-                    print(f"-> S.O. desaloja/ejecuta a {proceso_ejecutandose['nombre']}.")    
-
-        # Avanzamos el tiempo del bucle
+        # sumamos las 10ut de la iteracion
         tiempo_actual += 10
+
+        #guardamos los datos de la simulacion en el historial
+        historial.append({
+            'tiempo': tiempo_actual,
+            'so': accion_so,
+            'cpu': cpu_actual,
+            'listos': [p['nombre'] for p in listos],
+            'bloqueados': bloq_foto
+        })
 
     print("-----------------------------------")
     print("        FIN DE LA SIMULACION       ")
@@ -331,49 +410,105 @@ def srtf(procesos): #mas cortito primero CON DESALOJO
     print(f"-> La simulacion duro hasta {tiempo_actual}ut ")
     print("-----------------------------------")
     print("\n")
+
+    #imprimimos la tabla con los resultados de MCP/D
+    imprimir_diagrama(historial, nombres_procesos)
             
-
-
-def imprimir_diagrama(procesos): #para imprimir al final de cada simulacion algo similar al excel
-    if not procesos:
+#funcion para mostrar por consola la tabla tiempo/proceso tipo excel
+def imprimir_diagrama(historial, nombres_procesos): 
+    if not historial:
         print("No hay procesos cargados.")
         return
     else:
-
         print("\n|----------------------------------------------------|")
         print("|             DIAGRAMA TIEMPO / PROCESO              |")
         print("|----------------------------------------------------|")
+        print("Referencias S.O.: 1=Carga | 2=Ejecucion | 3=Bloqueo | 4=Fin E/S | 5=Desalojo | 6=Fin\n")
 
-        
+        #cortamos la simulacion en en bloques de 12 columnas porque puede ser muy larga
+        columnas_por_bloque = 12
+
+        #el tercer parametro de range hace que el inicio salte de 12 en 12
+        for inicio in range(0, len(historial), columnas_por_bloque):
+            #recortamos una slice de 12 elementos del historial de hasta 12 elementos
+            bloque = historial[inicio:inicio + columnas_por_bloque]
+
+            #calculamos el largo del renglon de los guiones segun las columnas del bloque
+            separador = "-" * (14 + len(bloque) * 6)
+            print(separador)
+
+            #las filas de bloqueo las recorremos de atras para adelante para que se apilen de abajo hacia arriba
+            for i in range(len(nombres_procesos) - 1, -1, -1):
+                #ponemos la palabra bloqueo en la fila
+                titulo = "Bloqueo" if i == len(nombres_procesos) // 2 else ""
+                #el <10 alinea el texto a la izquierda ocupando siempre 10 espacios fijos
+                fila = f"| {titulo:<10} |"
+                for paso in bloque:
+                    #si en ese momento habia un proceso en esa posicion de la cola de bloqueados, se muestra
+                    celda = paso['bloqueados'][i] if i < len(paso['bloqueados']) else ""
+                    #el ^5 centra el texto de la celda en 5 espacios para que coincida toda la grilla
+                    fila += f"{celda:^5}|"
+                print(fila)
+            print(separador)
+
+            #las filas de ejecucion de la CPU reccoren todos los procesos al reves y ponemos una X si usan la CPU
+            for nombre in reversed(nombres_procesos):
+                fila = f"| {nombre:^10} |"
+                for paso in bloque:
+                    celda = "X" if paso['cpu'] == nombre else ""
+                    fila += f"{celda:^5}|"
+                print(fila)
+                print(separador)
+
+            #igual que bloqueo, se dibuja como una pila de abajo hacia arriba
+            for i in range(len(nombres_procesos) - 1, -1, -1):
+                titulo = "Listo" if i == len(nombres_procesos) // 2 else ""
+                fila = f"| {titulo:<10} |"
+                for paso in bloque:
+                    celda = paso['listos'][i] if i < len(paso['listos']) else ""
+                    fila += f"{celda:^5}|"
+                print(fila)
+            print(separador)
+
+            #fila de acciones del SO, muestra los codigos de la politica que este empleando
+            fila_so = f"| {'S.O.':^10} |"
+            for paso in bloque:
+                fila_so += f"{paso['so']:^5}|"
+            print(fila_so)
+            print(separador)
+
+            #fila inferior que contiene las unidades de tiempo
+            fila_ut = f"| {'Tiempo UT':^10} |"
+            for paso in bloque:
+                fila_ut += f"{paso['tiempo']:^5}|"
+            print(fila_ut)
+            print(separador + "\n")
 
 
-
-
-
+#funcion principal que coordina todo el programa
 def main():
     #lista para guardar procesos en el main
     procesos = []
 
+    #bucle infinito para que el menu aparezca hasta que el usuario quiera salir
     while True:
-        opcion = menu() #se guarda la opcion del menu en la variable opcion 
+        opcion = menu() #mostramos el menu y guardamos la opcion del user
 
         if opcion == 1:
-            #cargando los procesos y guardandolos en la lista de procesos con la funcion cargar_procesos
+            #cargando los procesos y guardandolos en la lista que devuelve
             procesos = cargar_procesos()
             print("Los procesos han sido cargados exitosamente.")
         elif opcion == 2:
-            #muestra los procesos cargados y sus respectivos detalles
+            #mle pasamos la lista de procesos para imprimir en pantalla
             mostrar_procesos(procesos)
         elif opcion == 3:
-            #abre el menu que permite seleccionar el algoritmo de planificacion
+            #abre el submenu para elegir la politica de planificacion
             simular_ejecucion(procesos)
         elif opcion == 4:
             print("Gracias por usar el programa!")
-            break
-        elif opcion == 666:
-            print("ESTA ATRAS TUYO. NO LO MIRES.")
-            break
+            break #rompe el while True y termina la ejecucion
         else:
+            #si puso una opcion que no esta en el menu, le pedimos al user reintentar
             print("Opción inválida. Por favor, seleccione una opción del menu.")
 
 if __name__ == "__main__":

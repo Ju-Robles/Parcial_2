@@ -73,7 +73,8 @@ def cargar_procesos(): #funcion para edirle al usuario todos los datos de los pr
             'tiempo_restante_bloqueo': 0, #tiempo restante de bloqueo para cuando salga a e/s, se inicializa en 0 pq no esta bloq al principio
          }
         
-        #esto agrega el proceso a la lista de procesos 
+        #esto agrega el proceso a la lista de procesos
+        #append manda al final de la lista al proceso que vaya a entrar
         procesos.append(proceso)
 
      #devuelve la lista completa de procesos cargados
@@ -218,6 +219,7 @@ def fifo(procesos_originales): #fifito first in first out
         #si la CPU esta libre el S.O aprovecha para ejecutar una politica
         elif not proceso_ejecutandose:
             if en_espera: #la prioridad es la carga
+            #pop funciona perfecto para fifo ya que sirve para sacar y devolver el primer elemento de una lista
                 p = en_espera.pop(0) #sacamos al primero que estaba intentando entrar
                 print(f"-> S.O. carga a {p['nombre']}. Esta Listo para ejecutar.")
                 accion_so = f"1{p['nombre']}" #carga proceso nuevo
@@ -451,7 +453,9 @@ def imprimir_diagrama(historial, nombres_procesos):
                 print(fila)
             print(separador)
 
+            
             #las filas de ejecucion de la CPU reccoren todos los procesos al reves y ponemos una X si usan la CPU
+           # reversed sirve para invertir el orden de una lista o secuencia al momento de recorrerla, sin modificar la lista original
             for nombre in reversed(nombres_procesos):
                 fila = f"| {nombre:^10} |"
                 for paso in bloque:

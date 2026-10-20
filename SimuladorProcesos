@@ -515,5 +515,6 @@ def main():
             #si puso una opcion que no esta en el menu, le pedimos al user reintentar
             print("Opción inválida. Por favor, seleccione una opción del menu.")
 
+#este condicional sirve para que Python sepa dónde empieza la ejecución del script
 if __name__ == "__main__":
      main()
